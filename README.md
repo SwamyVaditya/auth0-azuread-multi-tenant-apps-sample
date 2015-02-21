@@ -4,6 +4,66 @@ Sample for the "Fabrikam Timesheets SaaS" application which is hosted here: http
 
 This sample shows how to build a multi-tenant SaaS application with Azure AD and Auth0.
 
+## Getting started.
+
+This sample is based on the [auth0-aspnet-owin](https://github.com/auth0/auth0-aspnet-owin) sample. First we'll have the setup in the `Startup.cs`file:
+
+```cs
+app.UseCookieAuthentication(new CookieAuthenticationOptions
+{
+    AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+    LoginPath = new PathString("/Account/Login")
+});
+
+app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+
+
+// Use Auth0
+var provider = new Auth0.Owin.Auth0AuthenticationProvider
+{
+    OnAuthenticated = context =>
+    {
+        // Add custom claims we get from Azure AD to the user's identity.
+        if (context.User["tenantid"] != null)
+            context.Identity.AddClaim(new Claim("tenantid", context.User.Value<string>("tenantid")));
+        if (context.User["upn"] != null)
+            context.Identity.AddClaim(new Claim("upn", context.User.Value<string>("upn")));
+        return Task.FromResult(0);
+    }
+};
+
+app.UseAuth0Authentication(
+    clientId: ConfigurationManager.AppSettings["auth0:ClientId"],
+    clientSecret: ConfigurationManager.AppSettings["auth0:ClientSecret"],
+    domain: ConfigurationManager.AppSettings["auth0:Domain"],
+    redirectPath: "/account/callback",
+    provider: provider);
+```
+
+And then we'll need our Azure AD credentials, Auth0 credentials and the connection string for the database:
+
+```xml
+  <appSettings>
+    <add key="webpages:Version" value="3.0.0.0" />
+    <add key="webpages:Enabled" value="false" />
+    <add key="ClientValidationEnabled" value="true" />
+    <add key="UnobtrusiveJavaScriptEnabled" value="true" />
+
+    <!-- AzureAD -->
+    <add key="AzureAD:DirectoryName" value="fabrikamcorporation.onmicrosoft.com" />
+    <add key="AzureAD:ClientId" value="..." />
+    <add key="AzureAD:Key" value="..." />
+
+    <!-- Auth0 configuration. -->
+    <add key="auth0:ClientId" value="..." />
+    <add key="auth0:ClientSecret" value="..." />
+    <add key="auth0:Domain" value="fabrikam.auth0.com" />
+  </appSettings>
+  <connectionStrings>
+    <add name="TimesheetDb" providerName="System.Data.SqlClient" connectionString="..." />
+  </connectionStrings>
+```
+
 ## What is Auth0?
 
 Auth0 helps you to:
