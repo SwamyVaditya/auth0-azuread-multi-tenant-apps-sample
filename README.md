@@ -2,7 +2,7 @@
 
 Sample for the "Fabrikam Timesheets SaaS" application which is hosted here: http://fabrikam-timesheets.azurewebsites.net
 
-This sample shows how to build a multi-tenant SaaS application with Azure AD and Auth0.
+This sample shows how to build a multi-tenant SaaS application with Azure AD and Auth0. More information is available in our documentation: [Building multi-tenant, SaaS applications with Azure AD and Auth0](https://auth0.com/docs/scenarios/multi-tenant-saas-azure-ad)
 
 ## Getting started.
 
