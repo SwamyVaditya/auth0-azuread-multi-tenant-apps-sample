@@ -1,0 +1,35 @@
+﻿@using System.Security.Claims
+@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle profile-image-dropdown" data-toggle="dropdown">
+            @if (ClaimsPrincipal.Current.HasClaim(t => t.Type == "picture"))
+            {
+                <img src="@ClaimsPrincipal.Current.FindFirst("picture").Value" class="profile-image img-circle">
+            }
+            <span id="name">@User.Identity.GetUserName()</span> <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a href="@Url.Action("Index", "Profile")"><i class="fa fa-cog"></i> Account</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out logout"></i>  Logout</a>
+                @using (Html.BeginForm("LogOff", "Account", new { returnUrl = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                {
+                    @Html.AntiForgeryToken()
+                }
+            </li>
+        </ul>
+    </li>
+
+}
+else
+{
+    <li><a href="javascript:showLock();">Login</a></li>
+}
+
+
+

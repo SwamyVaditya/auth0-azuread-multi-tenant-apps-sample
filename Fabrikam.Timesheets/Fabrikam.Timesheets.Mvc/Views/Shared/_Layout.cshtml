@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Fabrikam Timesheets</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Fabrikam Timesheets", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
+            </div>
+
+            <div class="navbar-collapse collapse pull-right">
+                <ul class="nav navbar-nav navbar-right">
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li>
+                            @Html.ActionLink("Timesheet Entries", "Index", "TimesheetEntries")
+                        </li>
+                    }
+                    @Html.Partial("_Login")
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            @RenderSection("footer", false)
+            <p>&copy; @DateTime.Now.Year - Fabrikam Timesheets</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <script src="//cdn.auth0.com/js/lock-7.1.min.js"></script>
+    <script type="text/javascript">
+        if (!window.location.origin) {
+            window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+        }
+
+        var cid = '@System.Configuration.ConfigurationManager.AppSettings["auth0:ClientId"]';
+        var domain = '@System.Configuration.ConfigurationManager.AppSettings["auth0:Domain"]';
+
+        var lock = new Auth0Lock(cid, domain);
+        function showLock() {
+            lock.once('signin ready', function () {
+                var link = $('<a class="a0-zocial a0-waad" href="#"><span>Login with Azure AD</span></a>');
+                link.on('click', function () {
+                    lock.getClient().login({ connection: '@System.Configuration.ConfigurationManager.AppSettings["AzureAD:DirectoryName"]' });
+                });
+
+                var iconList = $(this.$container).find('.a0-iconlist');
+                iconList.append(link);
+            });
+            lock.show({
+                connections: ['google-oauth2', 'facebook', 'windowslive'],
+                socialBigButtons: true,
+                callbackURL: window.location.origin + '/signin-auth0'
+            });
+        }
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

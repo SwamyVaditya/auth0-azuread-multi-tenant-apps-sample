@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<style type="text/css">
+    #register-container #a0-lock .a0-header {
+        display: none;
+    }
+    #register-container #a0-lock .a0-footer {
+        display: none;
+    }
+    #register-container #a0-lock .a0-mode-container {
+        padding-top: 30px;
+    }
+</style>
+
+<div class="jumbotron">
+    <h1>Fabrikam Timesheets</h1>
+    <p class="lead">Timesheet management in the cloud...</p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Signing Up</h2>
+        <p>Signing up is easy. You can register for a personal account using a social provider or you can register your organization through Azure AD.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h2>Social Account</h2>
+        <div id="register-container"></div>
+    </div>
+    <div class="col-md-6">
+        <h2>Organization</h2>
+        @Html.Action("Index", "Registration")
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        // Organization name is only required when signing up new organizations.
+        $(function () {
+            $('#organization_name').hide();
+            $('#organization_enabled').change(function () {
+                if ($('#organization_enabled').is(':checked'))
+                    $('#organization_name').show();
+                else
+                    $('#organization_name').hide();
+            });
+        });
+
+        // Show registration widget.
+        $(function() {
+            var registerLock = new Auth0Lock(cid, domain);
+            registerLock.showSignup({
+                connections: ['google-oauth2', 'facebook', 'windowslive'],
+                socialBigButtons: true,
+                callbackURL: window.location.origin + '/signin-auth0',
+                container: 'register-container',
+                dict: {
+                    "loginSocialButton": "Signup with {connection:title}"
+                }
+            });
+        });
+    </script>
+}
